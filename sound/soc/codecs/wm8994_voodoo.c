@@ -13,6 +13,7 @@
 #include <sound/soc.h>
 #include <linux/delay.h>
 #include <linux/miscdevice.h>
+#include <linux/switch.h>
 #include <linux/version.h>
 #include "wm8994_voodoo.h"
 
@@ -48,6 +49,8 @@
 #define wm8994_write(codec, reg, value) tegrak_wm8994_write(codec, reg, value)
 #define wm8994_read(codec, reg) tegrak_wm8994_read(codec, reg)
 #endif
+
+extern struct switch_dev android_switch;
 
 bool bypass_write_hook = false;
 bool bypass_write_hook_clamp = false;
@@ -122,7 +125,12 @@ static struct snd_soc_codec *codec;
 #define DEACTIVE		0x00
 #define PLAYBACK_ACTIVE		0x01
 #define CAPTURE_ACTIVE		0x02
+
+#if defined(CONFIG_SND_SOC_SAMSUNG_T0_WM1811) || defined(CONFIG_SND_SOC_SAMSUNG_M3_WM1811)
+#define CALL_ACTIVE		0
+#else
 #define CALL_ACTIVE		0x04
+#endif
 
 #define PCM_STREAM_DEACTIVE	0x00
 #define PCM_STREAM_PLAYBACK	0x01
@@ -722,9 +730,7 @@ bool is_path(int unified_path)
 	// headphones
 	case HEADPHONES:
 #ifdef GALAXY_S3
-		if( wm8994->micdet[0].jack == NULL ) return 0;
-		return (wm8994->micdet[0].jack->status & SND_JACK_HEADPHONE) ||
-		(wm8994->micdet[0].jack->status & SND_JACK_HEADSET);
+		return (switch_get_state(&android_switch) > 0);
 #else
 #ifdef NEXUS_S
 		return (wm8994->cur_path == HP
@@ -1968,7 +1974,7 @@ static struct attribute_group voodoo_sound_control_group = {
 
 static struct miscdevice voodoo_sound_device = {
 	.minor = MISC_DYNAMIC_MINOR,
-#ifdef GALAXY_S3
+#ifndef GALAXY_S3
 	.name = "scoobydoo_sound",
 #else
 	.name = "voodoo_sound",
@@ -1978,7 +1984,7 @@ static struct miscdevice voodoo_sound_device = {
 #ifndef MODULE
 static struct miscdevice voodoo_sound_control_device = {
 	.minor = MISC_DYNAMIC_MINOR,
-#ifdef GALAXY_S3
+#ifndef GALAXY_S3
 	.name = "scoobydoo_sound_control",
 #else
 	.name = "voodoo_sound_control",
