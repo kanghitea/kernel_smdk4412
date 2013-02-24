@@ -15,8 +15,7 @@
 #include <linux/module.h>   /* kernel module definitions */
 #include <linux/fs.h>       /* file system operations */
 #include <linux/cdev.h>     /* character device definitions */
-#include <linux/mm.h>       /* memory mananger definitions */
-#include <linux/mali/mali_utgard_ioctl.h>
+#include <linux/mm.h> /* memory mananger definitions */
 #include <linux/device.h>
 
 /* the mali kernel subsystem types */
@@ -24,19 +23,17 @@
 
 /* A memory subsystem always exists, so no need to conditionally include it */
 #include "mali_kernel_common.h"
-#include "mali_session.h"
+#include "mali_kernel_session_manager.h"
 #include "mali_kernel_core.h"
 
 #include "mali_osk.h"
 #include "mali_kernel_linux.h"
 #include "mali_ukk.h"
+#include "mali_kernel_ioctl.h"
 #include "mali_ukk_wrappers.h"
 #include "mali_kernel_pm.h"
 #include "mali_linux_pm.h"
-#include "mali_kernel_sysfs.h" 
-#include "mali_platform.h"
-#include "mali_kernel_license.h" 
-#include "mali_dma_buf.h"
+
 #include "mali_kernel_sysfs.h"
 
 /* */
